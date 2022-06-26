@@ -4,6 +4,7 @@ using System.Linq;
 using StudentPortal.API.DataModels;
 using System.Threading.Tasks;
 using System;
+using StudentPortal.API.DomainModels;
 
 namespace StudentPortal.API.Repositories
 {
@@ -16,8 +17,6 @@ namespace StudentPortal.API.Repositories
             this.context = context;
         }
 
-        
-
         public async Task<List<Student>> GetStudentsAsync()
         {
             return await context.Student.Include(nameof(Gender)).Include(nameof(Address)).ToListAsync();
@@ -26,6 +25,36 @@ namespace StudentPortal.API.Repositories
         public async Task<Student> GetStudentAsync(Guid studentId)
         {
             return await context.Student.Include(nameof(Gender)).Include(nameof(Address)).FirstOrDefaultAsync(x => x.Id == studentId);
+        }
+
+        public async Task<List<Gender>> GetGenderAsync()
+        {
+            return await context.Gender.ToListAsync();
+        }
+
+        public async Task<bool> Exists(Guid studentId)
+        {
+            return await context.Student.AnyAsync(x => x.Id == studentId);
+        }
+
+        public async Task<Student> UpdateStudent(Guid studentId, Student request)
+        {
+            var existingStudent = await GetStudentAsync(studentId);
+            if (existingStudent != null)
+            {
+                existingStudent.FirstName = request.FirstName;
+                existingStudent.LastName = request.LastName;
+                existingStudent.DateofBirth = request.DateofBirth;
+                existingStudent.Email = request.Email;
+                existingStudent.PhoneNumber = request.PhoneNumber;
+                existingStudent.GenderId = request.GenderId;
+                existingStudent.Address.PhysicalAddress = request.Address.PhysicalAddress;
+                existingStudent.Address.PostalAddress = request.Address.PostalAddress;
+
+                await context.SaveChangesAsync();
+                return existingStudent;
+            }
+            return null;
         }
     }
 }
