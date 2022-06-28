@@ -9,6 +9,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using StudentPortal.API.DataModels;
 using StudentPortal.API.Repositories;
+using FluentValidation.AspNetCore;
 
 namespace StudentPortal.API
 {
@@ -35,6 +36,7 @@ namespace StudentPortal.API
                 });
             });
             services.AddControllers();
+            services.AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<Startup>());
             services.AddDbContext<StudentContext>(options => options.UseSqlServer(Configuration.GetConnectionString("StudentPortalDb")));
 
             services.AddScoped<IStudentRepository, SqlStudentRepository>();
