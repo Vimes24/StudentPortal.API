@@ -6,6 +6,7 @@ using StudentPortal.API.DomainModels;
 
 namespace StudentPortal.API.Repositories
 {
+
     public interface IStudentRepository
     {
         Task<List<Student>> GetStudentsAsync();
